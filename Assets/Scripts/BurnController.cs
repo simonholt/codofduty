@@ -17,6 +17,10 @@ public class BurnController : MonoBehaviour
                 ps.Play();
             }
 
+            // Make burny noise
+            var audio = GetComponentInChildren<AudioSource>();
+            audio.Play();
+
             var rootObject = other.transform.root;
 
             var rb = rootObject.GetComponent<Rigidbody>();
