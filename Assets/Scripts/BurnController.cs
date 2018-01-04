@@ -1,37 +1,71 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using HoloToolkit.Unity.InputModule;
+using System.Collections;
 using UnityEngine;
 
-public class BurnController : MonoBehaviour
+public class BurnController : MonoBehaviour, ISpeechHandler
 {
+    private GameObject currentTarget;
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "BurnTarget")
+        if (other != null && other.tag == "BurnTarget")
         {
-            Debug.Log("Burnable target bro");
             // Fire smoke effect
             var ps = GetComponentInChildren<ParticleSystem>();
             if (ps != null)
-            {
                 ps.Play();
-            }
 
             // Make burny noise
             var audio = GetComponentInChildren<AudioSource>();
-            audio.Play();
+            if (audio != null)
+                audio.Play();
 
-            var rootObject = other.transform.root;
+            // Disable the IKnife, enable speech:
+            GetComponent<CapsuleCollider>().enabled = false;
 
-            var rb = rootObject.GetComponent<Rigidbody>();
+            currentTarget = other.transform.root.gameObject;
+        }
+    }
+
+    public void OnSpeechKeywordRecognized(SpeechEventData eventData)
+    {
+        Debug.Log("Recognized the word " + eventData.RecognizedText);
+
+        if (currentTarget != null)
+        {
+            StartCoroutine(SendChangesToServer(eventData.RecognizedText));
+        }
+    }
+
+    IEnumerator SendChangesToServer(string assignClass)
+    {
+        var myCurrentTarget = currentTarget;
+        currentTarget = null;
+
+
+        // Send thing to server
+
+        var rb = myCurrentTarget.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
             rb.useGravity = true;
             rb.constraints = RigidbodyConstraints.None;
-            rootObject.GetComponent<Animator>().enabled = false;
-
-            // Assign other to class (speech?)
-
-            // Remove other (explode / gravity)
-            Destroy(rootObject, 5.0f);
         }
+        var animator = myCurrentTarget.GetComponent<Animator>();
+        if (animator != null)
+        {
+            animator.enabled = false;
+        }
+
+        // Assign other to class (speech?)
+        Debug.Log("Assigning an object to a class named " + assignClass);
+
+        // Re-enable the knife thingie
+        GetComponent<CapsuleCollider>().enabled = true;
+
+        // Remove other (explode / gravity)
+        Destroy(myCurrentTarget, 5.0f);
+
+        yield break;
     }
 }
