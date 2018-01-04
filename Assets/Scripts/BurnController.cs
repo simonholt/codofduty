@@ -1,6 +1,7 @@
 ﻿using HoloToolkit.Unity.InputModule;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BurnController : MonoBehaviour, ISpeechHandler
 {
@@ -38,9 +39,15 @@ public class BurnController : MonoBehaviour, ISpeechHandler
     {
         Debug.Log("Recognized the word " + eventData.RecognizedText);
 
-        if (currentTarget != null)
+        var recogText = eventData.RecognizedText.ToLower();
+
+        if (recogText == "reset")
         {
-            StartCoroutine(SendChangesToServer(eventData.RecognizedText));
+            SceneManager.LoadScene(0);
+        }
+        else if (currentTarget != null)
+        {
+            StartCoroutine(SendChangesToServer(recogText));
         }
     }
 
