@@ -1,6 +1,7 @@
 ﻿using HoloToolkit.Unity.InputModule;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 
 public class BurnController : MonoBehaviour, ISpeechHandler
@@ -9,10 +10,15 @@ public class BurnController : MonoBehaviour, ISpeechHandler
 
     private GameObject rootObject;
 
+    public GameObject gameController;   // Can't be arsed figuring out how to define thor server only once, so... :)
+
+
+
     void Start()
     {
         rootObject = transform.root.gameObject;
     }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other != null && other.tag == "BurnTarget")
@@ -45,6 +51,10 @@ public class BurnController : MonoBehaviour, ISpeechHandler
         {
             SceneManager.LoadScene(0);
         }
+        else if (recogText == "finished")
+        {
+            StartCoroutine(gameController.GetComponent<GameController>().GameFinished());
+        }
         else if (currentTarget != null)
         {
             StartCoroutine(SendChangesToServer(recogText));
@@ -58,8 +68,19 @@ public class BurnController : MonoBehaviour, ISpeechHandler
 
 
         // Send thing to server
+        var roi = myCurrentTarget.GetComponent<Roi>();
+        var gc = gameController.GetComponent<GameController>();
+        var fishyUrl = string.Format("http://{0}/Game/AssignFish?gameId={1}&spectraId={2}&className={3}", gc.ThorServer, gc.GameId, roi.RoiId, assignClass);
+        Debug.Log(fishyUrl);
+        using (UnityWebRequest request = UnityWebRequest.Get(fishyUrl))
+        {
+            yield return request.SendWebRequest();
 
-        var rb = myCurrentTarget.GetComponent<Rigidbody>();
+            Debug.Log("Response was " + request.error);
+        }
+
+
+            var rb = myCurrentTarget.GetComponent<Rigidbody>();
         if (rb != null)
         {
             rb.useGravity = true;
@@ -83,4 +104,6 @@ public class BurnController : MonoBehaviour, ISpeechHandler
 
         yield break;
     }
+
+
 }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
@@ -19,6 +20,26 @@ public class GameController : MonoBehaviour
         public string roi;
     }
 
+    [System.Serializable]
+    class GameInfoContainer
+    {
+        public string gameId;
+    }
+
+    [System.Serializable]
+    class GameScoreContainer
+    {
+        public GameScore score;
+    }
+
+    [System.Serializable]
+    public class GameScore
+    {
+        public float score;
+        public string message;
+    }
+
+
 
     public string ThorServer;
 
@@ -27,6 +48,8 @@ public class GameController : MonoBehaviour
     public List<string> ClassNames;
 
     public List<GameObject> ClassPrefabs;
+
+    public string GameId;
 
     // Use this for initialization
     void Start()
@@ -41,6 +64,21 @@ public class GameController : MonoBehaviour
 
     IEnumerator GetSomeData()
     {
+        var fishyUrl = string.Format("http://{0}/Game/NewGame", ThorServer);
+        using (UnityWebRequest request = UnityWebRequest.Get(fishyUrl))
+        {
+            yield return request.SendWebRequest();
+
+            if (request.isDone && !request.isNetworkError && !request.isHttpError)
+            {
+                var json = request.downloadHandler.text;
+                var gameInfo = JsonUtility.FromJson<GameInfoContainer>(json);
+
+                GameId = gameInfo.gameId;
+            }
+        }
+
+
         var si = GetComponent<SpeechInputSource>();
         //var words = new List<KeywordAndKeyCode>(si.Keywords);
 
@@ -56,7 +94,7 @@ public class GameController : MonoBehaviour
         //si.Keywords = words.ToArray();
 
 
-        var fishyUrl = string.Format("http://{0}/Game/Fishes", ThorServer);
+        fishyUrl = string.Format("http://{0}/Game/Fishes", ThorServer);
         using (UnityWebRequest request = UnityWebRequest.Get(fishyUrl))
         {
             yield return request.SendWebRequest();
@@ -76,12 +114,14 @@ public class GameController : MonoBehaviour
                         {
                             var circle = Random.insideUnitCircle * 2;
                             var objectPosition = new Vector3(circle.x, 0, circle.y + 2.5f);
-                            var newModelPoint = Instantiate(prefabs[fishes.fishes[i].className]);
-                            newModelPoint.transform.position = objectPosition;
-                            newModelPoint.transform.Rotate(0, (Random.value * 25) - 12.5f, 0);
-                            newModelPoint.GetComponent<Rigidbody>().AddRelativeForce(0, 0, 1.0f);
+                            var newFishy = Instantiate(prefabs[fishes.fishes[i].className]);
+                            newFishy.transform.position = objectPosition;
+                            newFishy.transform.Rotate(0, (Random.value * 25) - 12.5f, 0);
+                            newFishy.GetComponent<Rigidbody>().AddRelativeForce(0, 0, 1.0f);
 
                             // TODO: Store the ROI for this object within the gameobject as extra data
+                            var newRoi = newFishy.AddComponent<Roi>();
+                            newRoi.RoiId = fishes.fishes[i].roi;
                         }
                     }
 
@@ -112,15 +152,41 @@ public class GameController : MonoBehaviour
                 {
                     var circle = Random.insideUnitCircle * 2;
                     var objectPosition = new Vector3(circle.x, 0, circle.y + 2.5f);
-                    var newModelPoint = Instantiate(prefabs[localfishes.fishes[i].className]);
-                    newModelPoint.transform.position = objectPosition;
-                    newModelPoint.transform.Rotate(0, (Random.value * 25) - 12.5f, 0);
-                    newModelPoint.GetComponent<Rigidbody>().AddRelativeForce(0, 0, 1.0f);
+                    var newFishy = Instantiate(prefabs[localfishes.fishes[i].className]);
+                    newFishy.transform.position = objectPosition;
+                    newFishy.transform.Rotate(0, (Random.value * 25) - 12.5f, 0);
+                    newFishy.GetComponent<Rigidbody>().AddRelativeForce(0, 0, 1.0f);
 
-                    // TODO: Store the ROI for this object within the gameobject as extra data
+                    var newRoi = newFishy.AddComponent<Roi>();
+                    newRoi.RoiId = localfishes.fishes[i].roi;
                 }
             }
 
+        }
+    }
+
+    public IEnumerator GameFinished()
+    {
+        var fishyUrl = string.Format("http://{0}/Game/GetScore?gameId={1}", ThorServer, GameId);
+        using (UnityWebRequest request = UnityWebRequest.Get(fishyUrl))
+        {
+            yield return request.SendWebRequest();
+
+            if (request.isDone && !request.isNetworkError && !request.isHttpError)
+            {
+                var json = request.downloadHandler.text;
+                var scoreInfo = JsonUtility.FromJson<GameScoreContainer>(json);
+
+                var go = GameObject.Find("Scoreboard");
+                var scr = go.GetComponent<GameScores>();
+
+                scr.Score = scoreInfo.score.score;
+                scr.Message = scoreInfo.score.message;
+
+                SceneManager.LoadScene(1);
+
+
+            }
         }
     }
 }

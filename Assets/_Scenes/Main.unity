@@ -220,6 +220,48 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: a611e772ef8ddf64d8106a9cbb70f31c, type: 2}
   m_IsPrefabParent: 0
+--- !u!1 &231517424
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 231517426}
+  - component: {fileID: 231517425}
+  m_Layer: 0
+  m_Name: Scoreboard
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &231517425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 231517424}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1221ad45af2227344a2dc07cf483c2fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Score: 0
+  Message: 
+--- !u!4 &231517426
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 231517424}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.0000000037252903, z: 1.0084}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &262788412
 Prefab:
   m_ObjectHideFlags: 0
@@ -598,7 +640,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba1174c7a2a7aa44b9b7d93708278b8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ThorServer: mm6438:9090
+  ThorServer: mm6438:9080
   ProjectId: Fish
   ClassNames:
   - pollock
@@ -606,6 +648,7 @@ MonoBehaviour:
   ClassPrefabs:
   - {fileID: 1787222255160512, guid: dd3501c9b07f4e84c974f35130dc91f5, type: 2}
   - {fileID: 1710077096573766, guid: d2789ab851b8e4a45a695cdfe9e39899, type: 2}
+  GameId: 
 --- !u!4 &613181060
 Transform:
   m_ObjectHideFlags: 0
@@ -635,10 +678,12 @@ MonoBehaviour:
   Keywords:
   - Keyword: reset
     KeyCode: 49
-  - Keyword: pollock
+  - Keyword: finished
     KeyCode: 50
-  - Keyword: whiting
+  - Keyword: pollock
     KeyCode: 51
+  - Keyword: whiting
+    KeyCode: 52
   recognitionConfidenceLevel: 2
 --- !u!114 &1214623151 stripped
 MonoBehaviour:
@@ -689,6 +734,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79aa66036eab38c48ba34b41720e8ed7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameController: {fileID: 613181058}
 --- !u!114 &1371990758
 MonoBehaviour:
   m_ObjectHideFlags: 0
