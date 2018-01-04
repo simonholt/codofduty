@@ -49,7 +49,7 @@ public class BurnController : MonoBehaviour, ISpeechHandler
 
         if (recogText == "reset")
         {
-            SceneManager.LoadScene(0);
+            SceneManager.LoadScene(1);
         }
         else if (recogText == "finished")
         {

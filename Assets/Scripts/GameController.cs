@@ -183,7 +183,7 @@ public class GameController : MonoBehaviour
                 scr.Score = scoreInfo.score.score;
                 scr.Message = scoreInfo.score.message;
 
-                SceneManager.LoadScene(1);
+                SceneManager.LoadScene(2);
 
 
             }

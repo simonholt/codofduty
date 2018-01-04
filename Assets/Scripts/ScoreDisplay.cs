@@ -1,8 +1,17 @@
-﻿using System.Collections;
+﻿using HoloToolkit.Unity.InputModule;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class ScoreDisplay : MonoBehaviour {
+public class ScoreDisplay : MonoBehaviour, ISpeechHandler {
+    public void OnSpeechKeywordRecognized(SpeechEventData eventData)
+    {
+        if (eventData.RecognizedText == "reset")
+        {
+            SceneManager.LoadScene(1);
+        }
+    }
 
     // Use this for initialization
     private void Start()
