@@ -605,7 +605,7 @@ MonoBehaviour:
   - whiting
   ClassPrefabs:
   - {fileID: 1787222255160512, guid: dd3501c9b07f4e84c974f35130dc91f5, type: 2}
-  - {fileID: 1769903334165694, guid: a9a94f7bd18f26e42840fc52a8440e93, type: 2}
+  - {fileID: 1710077096573766, guid: d2789ab851b8e4a45a695cdfe9e39899, type: 2}
 --- !u!4 &613181060
 Transform:
   m_ObjectHideFlags: 0
