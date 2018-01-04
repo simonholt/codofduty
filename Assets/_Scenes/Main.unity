@@ -634,11 +634,11 @@ MonoBehaviour:
   RecognizerStart: 0
   Keywords:
   - Keyword: reset
-    KeyCode: 0
+    KeyCode: 49
   - Keyword: pollock
-    KeyCode: 0
+    KeyCode: 50
   - Keyword: whiting
-    KeyCode: 0
+    KeyCode: 51
   recognitionConfidenceLevel: 2
 --- !u!114 &1214623151 stripped
 MonoBehaviour:
